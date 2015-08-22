@@ -19,8 +19,6 @@ $app->post('/routes', function () use ($app) {
         // Create route from params
         $request = $app->request();
 
-        print_r($app->request->post());
-
         //get params from request
         $address = $request->post('address');
         $port = $request->post('port');
@@ -47,10 +45,19 @@ $app->post('/routes', function () use ($app) {
 
 /* Returns a string with the data to be in the file */
 function fileData($address, $port){
+    if(getenv('SERVER_IP') !== false)
+    {
+        $ip = getenv('SERVER_IP');
+    }
+    else
+    {
+        $ip = '127.0.0.1';
+    }
+
     return "server {
                 listen 80;
                 location /$address/ {
-                    proxy_pass http://127.0.0.1:$port/;
+                    proxy_pass http://$ip:$port/;
                 }
             }";
 }

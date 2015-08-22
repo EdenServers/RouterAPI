@@ -19,6 +19,8 @@ $app->post('/routes', function () use ($app) {
         // Create route from params
         $request = $app->request();
 
+        print_r($app->request->post());
+
         //get params from request
         $address = $request->post('address');
         $port = $request->post('port');
@@ -30,7 +32,7 @@ $app->post('/routes', function () use ($app) {
         $id = R::store($route);
 
         //Create the file in nginx
-        file_put_contents("/etc/nginx/sites-enabled/" . $address, fileData($address, $port));
+        file_put_contents("/etc/nginx/sites-enabled/$address", fileData($address, $port));
 
         //Display the created record
         $route = R::findOne('routes', 'id=?', array($id));

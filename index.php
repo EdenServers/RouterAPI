@@ -22,15 +22,17 @@ $app->post('/routes', function () use ($app) {
         //get params from request
         $address = $request->post('address');
         $port = $request->post('port');
+        $ip = $request->port('ip');
 
         //Create a new record
         $route = R::dispense('routes');
         $route->address = (string)$address;
         $route->port = intval($port);
+        $route->ip = (string)$ip;
         $id = R::store($route);
 
         //Create the file in nginx
-        file_put_contents("/etc/nginx/sites-enabled/$address", fileData($address, $port));
+        file_put_contents("/etc/nginx/sites-enabled/$address", fileData($address, $port, $ip));
 
         //Display the created record
         $route = R::findOne('routes', 'id=?', array($id));
@@ -44,16 +46,7 @@ $app->post('/routes', function () use ($app) {
 });
 
 /* Returns a string with the data to be in the file */
-function fileData($address, $port){
-    if(getenv('SERVER_IP') !== false)
-    {
-        $ip = getenv('SERVER_IP');
-    }
-    else
-    {
-        $ip = '127.0.0.1';
-    }
-
+function fileData($address, $port, $ip){
     return "server {
                 listen 80;
                 location /$address/ {

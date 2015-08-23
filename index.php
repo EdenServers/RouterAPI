@@ -45,6 +45,18 @@ $app->post('/routes', function () use ($app) {
     }
 });
 
+$app->delete('/routes/:id', function ($id) use ($app) {
+    try
+    {
+        $route = R::load('routes', $id);
+        unlink("/etc/nginx/sites-enabled/$route->address");
+        R::trash($route);
+    } catch (Exception $e) {
+        $app->response()->status(400);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+    }
+});
+
 /* Returns a string with the data to be in the file */
 function fileData($address, $port, $ip){
     return "server {
